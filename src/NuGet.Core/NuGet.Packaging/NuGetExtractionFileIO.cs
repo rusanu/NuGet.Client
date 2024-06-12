@@ -8,6 +8,8 @@ using System.Runtime.InteropServices;
 using Microsoft.Win32.SafeHandles;
 //using NuGet.Common;
 
+#pragma warning disable IDE0055
+
 namespace NuGet.Packaging
 {
     internal static class NuGetExtractionFileIO
@@ -56,7 +58,7 @@ namespace NuGet.Packaging
             int fd;
             try
             {
-                fd = PosixCreate(path, _unixPermissions);
+                fd = -1; // PosixCreate(path, _unixPermissions);
             }
             catch (Exception exception)
             {
@@ -89,7 +91,7 @@ namespace NuGet.Packaging
         private static FileStream MonoPosixCreateFile(string path)
         {
             var fileStream = File.Create(path);
-            _ = PosixChmod(path, _unixPermissions);
+//            _ = PosixChmod(path, _unixPermissions);
             return fileStream;
         }
 
@@ -151,21 +153,21 @@ namespace NuGet.Packaging
             // threading or not. We could create a public initialization method, but to enforce it being called we
             // would have to break backwards compatability. Since this method is only called when the umask couldn't be
             // read from running "sh -c umask", we're extremely unlikely to ever get here, so best-effort is good enough.
-            var mask = Convert.ToInt32("700", 8);
-            mask = PosixUMask(mask);
-            _ = PosixUMask(mask);
+            //var mask = Convert.ToInt32("700", 8);
+            //mask = PosixUMask(mask);
+            //_ = PosixUMask(mask);
 
-            _unixPermissions = _unixPermissions & ~mask;
+            //_unixPermissions = _unixPermissions & ~mask;
         }
 
 
-        [DllImport("libc", EntryPoint = "creat")]
-        private static extern int PosixCreate([MarshalAs(UnmanagedType.LPStr)] string pathname, int mode);
+//        [DllImport("libc", EntryPoint = "creat")]
+//        private static extern int PosixCreate([MarshalAs(UnmanagedType.LPStr)] string pathname, int mode);
 
-        [DllImport("libc", EntryPoint = "chmod")]
-        private static extern int PosixChmod([MarshalAs(UnmanagedType.LPStr)] string pathname, int mode);
+//        [DllImport("libc", EntryPoint = "chmod")]
+//        private static extern int PosixChmod([MarshalAs(UnmanagedType.LPStr)] string pathname, int mode);
 
-        [DllImport("libc", EntryPoint = "umask")]
-        private static extern int PosixUMask(int mask);
+//        [DllImport("libc", EntryPoint = "umask")]
+//        private static extern int PosixUMask(int mask);
     }
 }

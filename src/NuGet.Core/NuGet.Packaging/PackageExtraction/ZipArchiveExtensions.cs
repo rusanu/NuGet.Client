@@ -122,6 +122,7 @@ namespace NuGet.Packaging
                 }
             }
 
+#pragma warning disable CA1822
             internal void UpdateFileTimeEntry(string fileFullPath, DateTime dateTime)
             {
                 //if (string.IsNullOrEmpty(fileFullPath)) throw new ArgumentNullException(nameof(fileFullPath));

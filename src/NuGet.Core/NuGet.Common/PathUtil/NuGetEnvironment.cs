@@ -9,6 +9,7 @@ using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 
+#pragma warning disable IDE0055
 namespace NuGet.Common
 {
     public static class NuGetEnvironment
@@ -46,15 +47,15 @@ namespace NuGet.Common
                 if (RuntimeEnvironmentHelper.IsLinux)
                 {
                     Directory.CreateDirectory(nuGetScratch);
-                    if (chmod(nuGetScratch, 0b111_000_000) != 0)   //0b111_000_000 = 700 permissions
-                    {
-                        // Another user created a folder pretending to be us! 
-                        var errno = Marshal.GetLastWin32Error(); // fetch the errno before running any other operation
-                        throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture,
-                            Strings.UnableToSetNuGetTempFolderPermission,
-                            nuGetScratch,
-                            errno));
-                    }
+//                    if (chmod(nuGetScratch, 0b111_000_000) != 0)   //0b111_000_000 = 700 permissions
+//                    {
+//                        // Another user created a folder pretending to be us! 
+//                        var errno = Marshal.GetLastWin32Error(); // fetch the errno before running any other operation
+//                        throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture,
+//                            Strings.UnableToSetNuGetTempFolderPermission,
+//                            nuGetScratch,
+//                            errno));
+//                    }
                 }
             }
             return nuGetScratch;
@@ -150,8 +151,8 @@ namespace NuGet.Common
         }
 
         /// <summary>Only to be used for setting permissions of directories under /tmp on Linux. Do not use elsewhere.</summary>
-        [DllImport("libc", SetLastError = true, CharSet = CharSet.Ansi)]
-        private static extern int chmod(string pathname, int mode);
+//        [DllImport("libc", SetLastError = true, CharSet = CharSet.Ansi)]
+//        private static extern int chmod(string pathname, int mode);
 
 
 #if IS_CORECLR
