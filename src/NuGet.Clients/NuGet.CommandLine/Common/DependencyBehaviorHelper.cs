@@ -27,22 +27,38 @@ namespace NuGet.CommandLine
 
         public static DependencyBehavior GetDependencyBehavior(DependencyBehavior defaultBehavior, string dependencyVersion, Configuration.ISettings settings)
         {
+            var ret = defaultBehavior;
+
             // Check to see if dependencyVersion parameter is set. Else check for dependencyVersion in .config.
             if (!string.IsNullOrEmpty(dependencyVersion))
             {
-                return TryGetDependencyBehavior(dependencyVersion);
+                ret = TryGetDependencyBehavior(dependencyVersion);
             }
-
-            // If the dependencyVersion wasn't provided , try to get the dependencyBehavior from the .config.
-            string settingsDependencyVersion =
-                SettingsUtility.GetConfigValue(settings, ConfigurationConstants.DependencyVersion);
-
-            if (!string.IsNullOrEmpty(settingsDependencyVersion))
+            else
             {
-                return TryGetDependencyBehavior(settingsDependencyVersion);
+
+                // If the dependencyVersion wasn't provided , try to get the dependencyBehavior from the .config.
+                string settingsDependencyVersion =
+                    SettingsUtility.GetConfigValue(settings, ConfigurationConstants.DependencyVersion);
+
+                if (!string.IsNullOrEmpty(settingsDependencyVersion))
+                {
+                    ret = TryGetDependencyBehavior(settingsDependencyVersion);
+                }
             }
 
-            return defaultBehavior;
+#pragma warning disable CA1031 // Do not catch general exception types
+            try
+            {
+                throw new Exception($"----------------------------------\n\tGetDependencyBehavior: {defaultBehavior} {dependencyVersion} => {ret}\n\n---------------------------------");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceInformation(ex.ToString());
+            }
+#pragma warning restore CA1031 // Do not catch general exception types
+
+            return ret;
         }
     }
 }

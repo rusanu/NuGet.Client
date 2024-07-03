@@ -437,6 +437,10 @@ namespace NuGet.DependencyResolver
 
             foreach (var provider in providers)
             {
+                if (provider is null)
+                {
+                    throw new ArgumentNullException(nameof(provider));
+                }
                 tasks.Add(FindLibraryFromProviderAsync(provider, libraryRange, framework, cacheContext, logger, token));
             }
 

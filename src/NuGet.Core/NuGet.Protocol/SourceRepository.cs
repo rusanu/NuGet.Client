@@ -3,7 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using NuGet.Configuration;
@@ -147,6 +149,8 @@ namespace NuGet.Protocol.Core.Types
         /// <returns>Null if the resource does not exist</returns>
         public virtual async Task<T> GetResourceAsync<T>(CancellationToken token) where T : class, INuGetResource
         {
+            var sb = new StringBuilder();
+            sb.AppendLine($"\n\n\n-----------------\n{GetType().Name}.GetResourceAsync<{typeof(T).Name}>:\n");
             var resourceType = typeof(T);
             INuGetResourceProvider[] possible = null;
 
@@ -155,12 +159,16 @@ namespace NuGet.Protocol.Core.Types
                 foreach (var provider in possible)
                 {
                     var result = await provider.TryCreate(this, token);
+                    sb.AppendLine($"\t\t{provider.GetType().Name}.TryCreate: ({result.Item1},{result.Item2?.GetType().Name} {result.Item2 is null})");
                     if (result.Item1)
                     {
                         return (T)result.Item2;
                     }
                 }
             }
+
+            sb.AppendLine($"{GetType().Name}.GetResourceAsync<{typeof(T).Name}>: TryGetValue miss {possible is null}. cnt:{_providerCache.Count}");
+            //Trace.TraceInformation(sb.ToString());
 
             return null;
         }

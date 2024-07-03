@@ -122,6 +122,8 @@ namespace NuGet.Protocol
             ILogger log,
             CancellationToken token)
         {
+           // System.Diagnostics.Trace.TraceInformation($"GetServiceIndexResourceV3: {source.PackageSource.Source}");
+
             var url = source.PackageSource.Source;
             var httpSourceResource = await source.GetResourceAsync<HttpSourceResource>(token);
             var client = httpSourceResource.HttpSource;
@@ -156,6 +158,11 @@ namespace NuGet.Protocol
                             log,
                             token);
                     }
+                    catch (PlatformNotSupportedException pex)
+                    {
+                        log.LogError(pex.ToString());
+                        throw;
+                    }
                     catch (OperationCanceledException ex)
                     {
                         var message = ExceptionUtilities.DisplayMessage(ex);
@@ -168,6 +175,7 @@ namespace NuGet.Protocol
                             + Environment.NewLine
                             + ExceptionUtilities.DisplayMessage(ex);
                         log.LogMinimal(message);
+                        log.LogMinimal(ex.ToString());
 
                         if (_enhancedHttpRetryHelper.IsEnabled &&
                             ex.InnerException != null &&
@@ -184,7 +192,9 @@ namespace NuGet.Protocol
                     }
                     catch (Exception ex) when (retry == maxRetries)
                     {
-                        var message = string.Format(CultureInfo.CurrentCulture, Strings.Log_FailedToReadServiceIndex, url);
+                        var message = string.Format(CultureInfo.CurrentCulture, Strings.Log_FailedToReadServiceIndex, url)
+                            + Environment.NewLine
+                            + ExceptionUtilities.DisplayMessage(ex);
 
                         throw new FatalProtocolException(message, ex);
                     }

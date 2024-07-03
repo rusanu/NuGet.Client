@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -200,6 +201,11 @@ namespace NuGet.Commands
                 throw new ArgumentNullException(nameof(logger));
             }
 
+            if (this == null)
+            {
+                throw new ArgumentNullException("this");
+            }
+
             cancellationToken.ThrowIfCancellationRequested();
 
             try
@@ -235,6 +241,8 @@ namespace NuGet.Commands
             CancellationToken cancellationToken)
         {
             await EnsureResource(cancellationToken);
+
+            // Trace.TraceInformation($"FindLibraryCoreAsync t:{this is null} f:{this?._findPackagesByIdResource is null} lr:{libraryRange}:{libraryRange is null} cc:{cacheContext}:{cacheContext is null} l:{logger}:{logger is null}");
 
             if (libraryRange.VersionRange?.MinVersion != null && libraryRange.VersionRange.IsMinInclusive && !libraryRange.VersionRange.IsFloating)
             {

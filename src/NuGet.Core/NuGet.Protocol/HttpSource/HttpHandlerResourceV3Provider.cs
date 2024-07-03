@@ -59,8 +59,8 @@ namespace NuGet.Protocol
             // replace the handler with the proxy aware handler
             var clientHandler = new HttpClientHandler
             {
-                Proxy = proxy,
-                AutomaticDecompression = (DecompressionMethods.GZip | DecompressionMethods.Deflate),
+                // Proxy = proxy,
+                // AutomaticDecompression = (DecompressionMethods.GZip | DecompressionMethods.Deflate),
             };
 
 #if NETSTANDARD2_0
